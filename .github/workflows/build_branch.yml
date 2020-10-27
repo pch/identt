@@ -31,7 +31,7 @@ jobs:
         run: docker pull $DOCKER_IMAGE_URL:latest
 
       - name: Build container image
-        run: docker build -t $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT --build-arg --cache-from $DOCKER_IMAGE_URL:latest .
+        run: docker build -t $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT -f $GITHUB_WORKSPACE/Dockerfile --cache-from $DOCKER_IMAGE_URL:latest .
 
       - name: Update docker-compose-ci.yml vars
         run: |
