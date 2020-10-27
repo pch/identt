@@ -17,8 +17,8 @@ jobs:
 
       - name: Set env
         run: |
-          echo "{GITHUB_SHA_SHORT}={$(echo $GITHUB_SHA | head -c7)}" >> $GITHUB_ENV
-          echo "{DOCKER_IMAGE_URL}={docker.pkg.github.com/pch/identt/identt}" >> $GITHUB_ENV
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_URL=docker.pkg.github.com/pch/identt/identt" >> $GITHUB_ENV
 
       - name: Docker Login
         env:
