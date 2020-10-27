@@ -40,3 +40,9 @@ jobs:
 
       - name: Run tests
         run: docker-compose -f $GITHUB_WORKSPACE/docker-compose-ci.yml up --exit-code-from rails
+
+      - name: Tag image as latest
+        run: docker tag $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT $DOCKER_IMAGE_URL:latest
+
+      - name: Push image to registry
+        run: docker push $DOCKER_IMAGE_URL

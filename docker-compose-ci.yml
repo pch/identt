@@ -11,6 +11,7 @@ services:
       DATABASE_HOST: database
       DATABASE_USERNAME: postgres
       DATABASE_PASSWORD: testpass
+      REDIS_URL: "redis://redis:6379/1"
     depends_on:
       - database
     entrypoint: ./docker/docker-entrypoint-ci.sh
