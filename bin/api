@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+cmdname=$1; shift
+
+if [ "$cmdname" = "signup" ]; then
+  echo "Signing up..."
+
+  email=$1;
+
+  curl -H "Accept: application/json" -H "Content-type: application/json" -H "X-Api-Key: $API_KEY" -X POST -d "{\"user\":{\"email\":\"$email\"}}" http://localhost:8787/api/v1/magic/signups
+
+  exit
+fi
+
+if [ "$cmdname" = "login" ]; then
+  echo "Logging in..."
+
+  token=$1;
+
+  curl -H "Accept: application/json" -H "Content-type: application/json" -H "X-Api-Key: $API_KEY" -X POST -d " {\"token\":\"$token\"}" http://localhost:8787/api/v1/magic/session
+
+  exit
+fi
+
+echo "Unknown command"
+exit 1

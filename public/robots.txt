@@ -1,0 +1,4 @@
+# Nothing to index here
+
+User-agent: *
+Disallow: /

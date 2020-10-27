@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+  rails:
+    # <TAG> will be replaced by GH actions
+    image: docker.pkg.github.com/pch/identt/identt:<TAG>
+    stdin_open: true
+    tty: true
+    environment:
+      RAILS_ENV: test
+      DATABASE_HOST: database
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: testpass
+    depends_on:
+      - database
+    entrypoint: ./docker/docker-entrypoint-ci.sh
+    command: bundle exec rails test
+
+  database:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: authpass
+    command: -c fsync=off
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
+      interval: 5s

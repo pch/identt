@@ -1,0 +1,8 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+john:
+  identifier: qwertyasdf
+  client_app: default
+  name: John Doe
+  email: john.doe@example.com
+  password_digest: <%= default_password_digest %>

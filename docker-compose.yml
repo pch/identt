@@ -1,0 +1,88 @@
+version: "3.4"
+
+x-app: &app
+  image: auth-app:1.0.1
+  build:
+    context: .
+    args:
+      RUBY_VERSION: "2.7.2"
+      PG_MAJOR: "12"
+      BUNDLER_VERSION: "2.1.4"
+      RAILS_ENV: "development"
+  environment: &env
+    RAILS_ENV: ${RAILS_ENV:-development}
+  env_file:
+    - development.env
+
+x-backend: &backend
+  <<: *app
+  stdin_open: true
+  tty: true
+  volumes:
+    - .:/usr/src/app:cached
+    - gem_cache:/gems
+    - ~/.irbrc:/root/.irbrc
+    - ~/.irb_history:/root/.irb_history
+    - ~/.pry_history:/root/.pry_history
+    - ./docker/.psqlrc:/root/.psqlrc:ro
+    - ./docker/.bashrc:/root/.bashrc:ro
+  environment:
+    <<: *env
+    PORT: 8787
+    DATABASE_HOST: database
+    DATABASE_USERNAME: postgres
+    DATABASE_PASSWORD: authpass
+    REDIS_URL: "redis://redis:6379/1"
+    NUM_WEBS: 1
+    HISTFILE: /usr/src/app/log/.bash_history
+    PSQL_HISTFILE: /usr/src/app/log/.psql_history
+    EDITOR: vim
+
+  depends_on:
+    - database
+    - redis
+
+services:
+  bash:
+    <<: *backend
+    entrypoint: ""
+    command: /bin/bash
+
+  rails:
+    <<: *backend
+    entrypoint: ./docker/docker-entrypoint.sh
+    command: bundle exec rails server -b 0.0.0.0
+    ports:
+      - "8787:8787"
+
+  sidekiq:
+    <<: *backend
+    entrypoint: ""
+    command: bundle exec sidekiq -C config/sidekiq.yml
+
+  redis:
+    image: redis
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  database:
+    image: postgres:12
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./log:/root/log
+      - ./docker/.psqlrc:/root/.psqlrc:ro
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: authpass
+      PSQL_HISTFILE: /root/log/.psql_history
+    command: -c fsync=off
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
+      interval: 5s
+
+volumes:
+  db_data:
+  gem_cache:
