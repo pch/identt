@@ -1,5 +1,7 @@
 # identt
 
+![](https://github.com/pch/identt/workflows/build/badge.svg)
+
 Opinionated, reusable microservice (JSON API-only) for secure authentication.
 
 It provides everything you need to sign up, log in, log out and store user data.
