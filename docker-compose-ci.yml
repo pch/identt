@@ -10,7 +10,7 @@ services:
       RAILS_ENV: test
       DATABASE_HOST: database
       DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: testpass
+      DATABASE_PASSWORD: authpass
       REDIS_URL: "redis://redis:6379/1"
     depends_on:
       - database
