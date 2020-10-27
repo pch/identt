@@ -17,8 +17,8 @@ jobs:
 
       - name: Set env
         run: |
-          echo ::set-env name=GITHUB_SHA_SHORT::$(echo $GITHUB_SHA | head -c7)
-          echo ::set-env name=DOCKER_IMAGE_URL::docker.pkg.github.com/pch/identt/identt
+          echo "{GITHUB_SHA_SHORT}={$(echo $GITHUB_SHA | head -c7)}" >> $GITHUB_ENV
+          echo "{DOCKER_IMAGE_URL}={docker.pkg.github.com/pch/identt/identt}" >> $GITHUB_ENV
 
       - name: Docker Login
         env:
@@ -27,12 +27,11 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: docker login $DOCKER_REGISTRY_URL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      # - name: Pull latest image to cache layers from
-      #   run: docker pull $DOCKER_IMAGE_URL:latest
+      - name: Pull latest image to cache layers from
+        run: docker pull $DOCKER_IMAGE_URL:latest
 
       - name: Build container image
-        # run: docker build -t $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT -f $GITHUB_WORKSPACE/Dockerfile --build-arg -cache-from $DOCKER_IMAGE_URL:latest .
-        run: docker build -t $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT -f $GITHUB_WORKSPACE/Dockerfile .
+        run: docker build -t $DOCKER_IMAGE_URL:$GITHUB_SHA_SHORT -f $GITHUB_WORKSPACE/Dockerfile --build-arg -cache-from $DOCKER_IMAGE_URL:latest .
 
       - name: Update docker-compose-ci.yml vars
         run: |
